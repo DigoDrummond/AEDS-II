@@ -132,7 +132,6 @@ class Jogador {
 }
 
 public class TP02Q07 {
-	public static int countComp = 0, countMov = 0;
 
 	public static void main(String[] args) {
 		long tempoInicial = System.currentTimeMillis();
@@ -164,7 +163,7 @@ public class TP02Q07 {
 			
 		}
 
-		insertionSort(escolhidos);
+		int[] count = insertionSort(escolhidos);
 		for (int i = 0; i < escolhidos.size(); i++) {
 			escolhidos.get(i).imprimir();
 		}
@@ -174,7 +173,7 @@ public class TP02Q07 {
 		long tempoFinal = System.currentTimeMillis();
 		try {
 			BufferedWriter escritor = new BufferedWriter(new FileWriter("matrícula_insercao.txt"));
-			escritor.write("Matrícula: 803716" + "\tComparações: " + countComp + "\tMovimentações: " + countMov
+			escritor.write("Matrícula: 802742" + "\tComparações: " + count[0] + "\tMovimentações: " + count[1]
 					+ "\tExecução: " + ((tempoFinal - tempoInicial) / 1000d) + "ms");
 			escritor.close();
 		} catch (IOException e) {
@@ -182,8 +181,10 @@ public class TP02Q07 {
 		}
 	}
 
-	public static void insertionSort(ArrayList<Jogador> lista) {
+	public static int[] insertionSort(ArrayList<Jogador> lista) {
 		int n = lista.size();
+		int comp = 0;
+		int mov = 0;
 	
 		for (int i = 1; i < n; i++) {
 			Jogador tmp = lista.get(i);
@@ -203,6 +204,7 @@ public class TP02Q07 {
 	
 			lista.set(j + 1, tmp);
 		}
+		return new int[] { comp, mov };
 	}
 	
 }

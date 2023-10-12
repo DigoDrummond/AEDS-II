@@ -1,218 +1,230 @@
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.FileReader;
-import java.util.Scanner;
-import java.util.ArrayList;
 import java.io.FileWriter;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.Scanner;
 
 class Jogador {
+	private int id;
+	private String nome;
+	private int altura;
+	private int peso;
+	private String universidade;
+	private int anoNascimento;
+	private String cidadeNascimento;
+	private String estadoNascimento;
 
-    private int id;
-    private String nome;
-    private int altura;
-    private int peso;
-    private String universidade;
-    private int anoNascimento;
-    private String cidadeNascimento;
-    private String estadoNascimento;
+	public Jogador(int id, String nome, int altura, int peso, String universidade, int anoNascimento,
+			String cidadeNascimento, String estadoNascimento) {
+		this.id = id;
+		this.nome = nome;
+		this.altura = altura;
+		this.peso = peso;
+		this.universidade = universidade;
+		this.anoNascimento = anoNascimento;
+		this.cidadeNascimento = cidadeNascimento;
+		this.estadoNascimento = estadoNascimento;
+	}
 
-    public Jogador() {
-    }
+	public Jogador() {
+	}
 
-    public Jogador(int id, String nome, int altura, int peso, String universidade, int anoNascimento,
-            String cidadeNascimento, String estadoNascimento) {
-        this.id = id;
-        this.nome = nome;
-        this.altura = altura;
-        this.peso = peso;
-        this.universidade = universidade;
-        this.anoNascimento = anoNascimento;
-        this.cidadeNascimento = cidadeNascimento;
-        this.estadoNascimento = estadoNascimento;
-    }
+	public int getId() {
+		return id;
+	}
 
-    public int getId() {
-        return id;
-    }
+	public void setId(int id) {
+		this.id = id;
+	}
 
-    public void setId(int id) {
-        this.id = id;
-    }
+	public String getNome() {
+		return nome;
+	}
 
-    public String getNome() {
-        return nome;
-    }
+	public void setNome(String nome) {
+		this.nome = nome;
+	}
 
-    public void setNome(String nome) {
-        this.nome = nome;
-    }
+	public int getAltura() {
+		return altura;
+	}
 
-    public int getAltura() {
-        return altura;
-    }
+	public void setAltura(int altura) {
+		this.altura = altura;
+	}
 
-    public void setAltura(int altura) {
-        this.altura = altura;
-    }
+	public int getPeso() {
+		return peso;
+	}
 
-    public int getPeso() {
-        return peso;
-    }
+	public void setPeso(int peso) {
+		this.peso = peso;
+	}
 
-    public void setPeso(int peso) {
-        this.peso = peso;
-    }
+	public String getUniversidade() {
+		return universidade;
+	}
 
-    public String getUniversidade() {
-        return universidade;
-    }
+	public void setUniversidade(String universidade) {
+		this.universidade = universidade;
+	}
 
-    public void setUniversidade(String universidade) {
-        this.universidade = universidade;
-    }
+	public int getAnoNascimento() {
+		return anoNascimento;
+	}
 
-    public int getAnoNascimento() {
-        return anoNascimento;
-    }
+	public void setAnoNascimento(int anoNascimento) {
+		this.anoNascimento = anoNascimento;
+	}
 
-    public void setAnoNascimento(int anoNascimento) {
-        this.anoNascimento = anoNascimento;
-    }
+	public String getCidadeNascimento() {
+		return cidadeNascimento;
+	}
 
-    public String getCidadeNascimento() {
-        return cidadeNascimento;
-    }
+	public void setCidadeNascimento(String cidadeNascimento) {
+		this.cidadeNascimento = cidadeNascimento;
+	}
 
-    public void setCidadeNascimento(String cidadeNascimento) {
-        if (cidadeNascimento.length() > 0)
-            this.cidadeNascimento = cidadeNascimento;
-        else
-            cidadeNascimento = "nao informado";
-    }
+	public String getEstadoNascimento() {
+		return estadoNascimento;
+	}
 
-    public String getEstadoNascimento() {
-        return estadoNascimento;
-    }
+	public void setEstadoNascimento(String estadoNascimento) {
+		this.estadoNascimento = estadoNascimento;
+	}
 
-    public void setEstadoNascimento(String estadoNascimento) {
-        this.estadoNascimento = estadoNascimento;
-    }
+	public void imprimir() {
+		System.out.println("[" + id + " ## " + nome + " ## " + altura + " ## " + peso + " ## " + anoNascimento + " ## "
+				+ universidade + " ## " + cidadeNascimento + " ## " + estadoNascimento + "]");
+	}
 
-    public void imprimir() {
-        System.out.println("[" + getId() + " ## " + getNome() + " ## " + getAltura() + " ## " + getPeso() + " ## "
-                + getAnoNascimento() + " ## " + getUniversidade() + " ## " + getCidadeNascimento() + " ## "
-                + getEstadoNascimento() + "]");
-    }
-    public int compareTo(Jogador outro) {
-        return this.universidade.compareTo(outro.universidade);
-    }
+	public void Ler(String linha) {
+		int j = 0;
+		char c = ',';
+		int tmp = 0;
+		String vetorStr[] = new String[8];
+		for (int i = 0; i < linha.length(); i++) {
+			if (linha.charAt(i) == c) {
+				vetorStr[j] = linha.substring(tmp, i);
+				tmp = i + 1;
+				if (vetorStr[j].intern() == "") {
+					vetorStr[j] = "nao informado";
+				}
+				j++;
+			}
+		}
+		vetorStr[7] = linha.substring(tmp, linha.length());
+		if (vetorStr[7].intern() == "") {
+			vetorStr[7] = "nao informado";
+		}
 
-    public void ler(String linha) {
-        String[] data = new String[8];
-        int tmp = 0;
-        int j = 0;
-        for (int i = 0; i < linha.length(); i++) {
-            if (linha.charAt(i) == ',') {
-                data[j] = linha.substring(tmp, i);
-                tmp = i + 1;
-                if (data[j].intern() == "") {
-                    data[j] = "nao informado";
-                }
-                j++;
+		setId(Integer.parseInt(vetorStr[0]));
+		setNome(vetorStr[1]);
+		setAltura(Integer.parseInt(vetorStr[2]));
+		setPeso(Integer.parseInt(vetorStr[3]));
+		setUniversidade(vetorStr[4]);
+		setAnoNascimento(Integer.parseInt(vetorStr[5]));
+		setCidadeNascimento(vetorStr[6]);
+		setEstadoNascimento(vetorStr[7]);
+	}
+
+    public static Comparator<Jogador> UniversidadeNomeComparator = new Comparator<Jogador>() {
+        @Override
+        public int compare(Jogador jogador1, Jogador jogador2) {
+            int resultado = jogador1.getUniversidade().compareTo(jogador2.getUniversidade());
+            if (resultado == 0) {
+                return jogador1.getNome().compareTo(jogador2.getNome());
             }
-
+            return resultado;
         }
-
-        data[7] = linha.substring(tmp, linha.length());
-
-        if (data[7] == "") {
-            data[7] = "nao informado";
-        }
-        setId(Integer.parseInt(data[0]));
-        setNome(data[1]);
-        setAltura(Integer.parseInt(data[2]));
-        setPeso(Integer.parseInt(data[3]));
-        setUniversidade(data[4]);
-        setAnoNascimento(Integer.parseInt(data[5]));
-        setCidadeNascimento(data[6]);
-        setEstadoNascimento(data[7]);
-
-    }
+    };
 }
 
 public class TP02Q13 {
+	public static int comp = 0, mov = 0;
 
-    public static void main(String[] args) {
-        long tempoInicial = System.currentTimeMillis();
-        Scanner sc = new Scanner(System.in);
-        ArrayList<Jogador> jogadores = new ArrayList<>();
-        try {
-            FileReader fileReader = new FileReader("/tmp/players.csv");
-            BufferedReader arq = new BufferedReader(fileReader);
-            arq.readLine();
-            while (arq.ready()) {
-                Jogador jogador = new Jogador();
-                jogador.ler(arq.readLine());
-                jogadores.add(jogador);
+	public static void main(String[] args) {
+		long tempoInicial = System.currentTimeMillis();
+		ArrayList<Jogador> jogadores = new ArrayList<>();
+
+		try {
+			FileReader fileReader = new FileReader("/tmp/players.csv");
+			BufferedReader arq = new BufferedReader(fileReader);
+
+			arq.readLine();
+
+			while (arq.ready()) {
+				Jogador jogador = new Jogador();
+				jogador.Ler(arq.readLine());
+				jogadores.add(jogador);
+			}
+			arq.close();
+
+		} catch (Exception e) {
+			e.getMessage();
+		}
+
+		ArrayList<Jogador> escolhidos = new ArrayList<>();
+		Scanner sc = new Scanner(System.in);
+		String id = sc.nextLine();
+		while (!id.equals("FIM")) {
+				escolhidos.add(jogadores.get(Integer.parseInt(id)));
+				id = sc.nextLine();
+		}
+
+		MergeSort(escolhidos, Jogador.UniversidadeNomeComparator);
+		for (int i = 0; i < escolhidos.size(); i++) {
+			escolhidos.get(i).imprimir();
+		}
+
+		sc.close();
+
+		long tempoFinal = System.currentTimeMillis();
+		try {
+			BufferedWriter escritor = new BufferedWriter(new FileWriter("matrícula_merge.txt"));
+			escritor.write("Matrícula: 802742" + "\tComparações: " + comp + "\tMovimentações: " + mov
+					+ "\tExecução: " + ((tempoFinal - tempoInicial) / 1000d) + "ms");
+			escritor.close();
+		} catch (IOException e) {
+			e.getMessage();
+		}
+	}
+
+
+    public static void MergeSort(ArrayList<Jogador> escolhidos, Comparator<Jogador> comparator) {
+        if (escolhidos.size() > 1) {
+            int meio = escolhidos.size() / 2;
+            ArrayList<Jogador> esq = new ArrayList<>(escolhidos.subList(0, meio));
+            ArrayList<Jogador> dir = new ArrayList<>(escolhidos.subList(meio, escolhidos.size()));
+
+            MergeSort(esq, comparator);
+            MergeSort(dir, comparator);
+
+            int i = 0, j = 0, k = 0;
+            while (i < esq.size() && j < dir.size()) {
+				comp++;
+                if (comparator.compare(esq.get(i), dir.get(j)) < 0) {
+                    escolhidos.set(k++, esq.get(i++));
+					mov++;
+                } else {
+                    escolhidos.set(k++, dir.get(j++));
+					mov++;
+                }
             }
-            arq.close();
-        } catch (Exception e) {
-            System.out.println(e.getMessage() + "\n" + e.getLocalizedMessage());
-        }
-        ArrayList<Jogador> escolhidos = new ArrayList<>();
-        String input = sc.nextLine();
-        while (!input.equals("FIM")) {
-            escolhidos.add(jogadores.get(Integer.parseInt(input)));
-            input = sc.nextLine();
-        }
-        mergeSort(escolhidos);
-        for (int i = 0; i < escolhidos.size(); i++) {
-            escolhidos.get(i).imprimir();
-        }
 
-        long tempoFinal = System.currentTimeMillis();
-        try {
-            FileWriter fileWriter = new FileWriter("matricula_heapsort.txt");
-            BufferedWriter arq = new BufferedWriter(fileWriter);
-            arq.write("Matricula: 802742\tTempo: " + (tempoFinal - tempoInicial) / 1000d);
-            arq.close();
-        } catch (Exception e) {
-            System.out.println(e.getMessage() + "\n" + e.getLocalizedMessage());
-        }
+            while (i < esq.size()) {
+                escolhidos.set(k++, esq.get(i++));
+				mov++;
+            }
 
-        sc.close();
-
-    }
-
-    
-    public static void mergeSort(ArrayList<Jogador> array) {
-        int n = array.size();
-        if (n < 2) {
-            return;
-        }
-        int meio = n / 2;
-        ArrayList<Jogador> esquerda = new ArrayList<>(array.subList(0, meio));
-        ArrayList<Jogador> direita = new ArrayList<>(array.subList(meio, n));
-    
-        mergeSort(esquerda);
-        mergeSort(direita);
-    
-        int i = 0, j = 0, k = 0;
-        while (i < esquerda.size() && j < direita.size()) {
-            if (esquerda.get(i).compareTo(direita.get(j)) < 0) {
-                array.set(k++, esquerda.get(i++));
-            } else {
-                array.set(k++, direita.get(j++));
+            while (j < dir.size()) {
+                escolhidos.set(k++, dir.get(j++));
+				mov++;
             }
         }
-    
-        while (i < esquerda.size()) {
-            array.set(k++, esquerda.get(i++));
-        }
-    
-        while (j < direita.size()) {
-            array.set(k++, direita.get(j++));
-        }
     }
-    
+	
 }

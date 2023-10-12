@@ -169,7 +169,7 @@ public class TP02Q05 {
 
         long tempoFinal = System.currentTimeMillis();
         try{
-            FileWriter fileWriter = new FileWriter("matricula_sequencial.txt");
+            FileWriter fileWriter = new FileWriter("matricula_selecao.txt");
             BufferedWriter arq = new BufferedWriter(fileWriter);
             arq.write("Matricula: 802742\tTempo: " +(tempoFinal - tempoInicial) / 1000d + "\tComparacoes: "+ count[0] + "\tMovimentações: " + count[1]);
             arq.close();

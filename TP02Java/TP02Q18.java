@@ -4,6 +4,7 @@ import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Scanner;
 
 class Jogador {
@@ -131,16 +132,15 @@ class Jogador {
     }
 }
 
-public class TP02Q11 {
+public class TP02Q18 {
     public static int comp = 0, mov = 0;
-
     public static void main(String[] args) {
         long tempoInicial = System.currentTimeMillis();
         ArrayList<Jogador> jogadores = new ArrayList<>();
 
         try {
-            FileReader fr = new FileReader("/tmp/players.csv");
-            BufferedReader arq = new BufferedReader(fr);
+            FileReader fileReader = new FileReader("/tmp/players.csv");
+            BufferedReader arq = new BufferedReader(fileReader);
 
             arq.readLine();
 
@@ -152,27 +152,26 @@ public class TP02Q11 {
             arq.close();
 
         } catch (Exception e) {
-           e.getMessage();
+            e.getMessage();
         }
 
-        ArrayList<Jogador> selectedOnes = new ArrayList<>();
-        Scanner scanner = new Scanner(System.in);
-        String frase = scanner.nextLine();
-        while (!frase.equals("FIM")) {
-            int n = Integer.parseInt(frase);
-            if (n >= 0 && n < jogadores.size()) {
-                selectedOnes.add(jogadores.get(Integer.parseInt(frase)));
-                frase = scanner.nextLine();
-            } else {
-                System.out.println("Indice fora dos limites.");
-                frase = scanner.nextLine();
-            }
+        ArrayList<Jogador> escolhidos = new ArrayList<>();
+        Scanner sc = new Scanner(System.in);
+        String id =sc.nextLine();
+        while (!id.equals("FIM")) {
+                escolhidos.add(jogadores.get(Integer.parseInt(id)));
+                id =sc.nextLine();
         }
 
-        countingSort(selectedOnes);
-
-        scanner.close();
-
+        quickSortPartial(escolhidos, 0, escolhidos.size() - 1);
+        int indice = 10;
+        if (indice >= 0 && indice < escolhidos.size()) {
+            List<Jogador> sublista = escolhidos.subList(indice, escolhidos.size());
+            sublista.clear();
+        }
+        for (int i = 0; i < 10; i++) {
+            escolhidos.get(i).imprimir();
+        }
         long tempoFinal = System.currentTimeMillis();
         try {
             BufferedWriter bw = new BufferedWriter(new FileWriter("matrícula_countingsort.txt"));
@@ -182,58 +181,46 @@ public class TP02Q11 {
         } catch (IOException e) {
            e.getMessage();
         }
+
+       sc.close();
     }
 
-    public static int getMaior(ArrayList<Jogador> array) {
-        int maior = array.get(0).getAltura();
-        for (int i = 0; i < array.size(); i++) {
+    public static void quickSortPartial(ArrayList<Jogador> lista, int esq, int dir) {
+        int i = esq, j = dir;
+        
+        Jogador pivo = lista.get((esq + dir) / 2);
+        
+        while (i <= j) {
             comp++;
-            if (array.get(i).getAltura() > maior)
-                maior = array.get(i).getAltura();
-        }
-        return maior;
-    }
-
-    public static void countingSort(ArrayList<Jogador> A) {
-        int[] B = new int[A.size()];
-        int[] C = new int[getMaior(A)];
-        ArrayList<Jogador> ordenado = new ArrayList<>();
+            while (compareJogadores(lista.get(i), pivo) < 0)
+                i++;
+            comp++;
+            while (compareJogadores(lista.get(j), pivo) > 0)
+                j--;
     
-        for (int i = 0; i < A.size(); i++) {
-            C[A.get(i).getAltura() - 1] += 1;
-        }
-    
-        for (int i = 1; i < C.length; i++) {
-            C[i] += C[i - 1];
-        }
-    
-        for (int i = A.size() - 1; i >= 0; i--) {
-            B[C[A.get(i).getAltura() - 1] - 1] = i;
-            C[A.get(i).getAltura() - 1] -= 1;
-        }
-    
-        for (int i = 0; i < B.length; i++) {
-            ordenado.add(A.get(B[i]));
-        }
-    
-        for (int i = 0; i < ordenado.size(); i++) {
-            for (int j = i + 1; j < ordenado.size(); j++) {
-                comp++;
-                if (ordenado.get(i).getAltura() == ordenado.get(j).getAltura()) {
-                    comp++;
-                    if (ordenado.get(i).getNome().compareToIgnoreCase(ordenado.get(j).getNome()) > 0) {
-                        // Troque os jogadores de posição se o nome for maior em ordem alfabética
-                        Jogador temp = ordenado.get(i);
-                        ordenado.set(i, ordenado.get(j));
-                        ordenado.set(j, temp);
-                        mov+=3;
-                    }
-                }
+            if (i <= j) {
+                Jogador temp = lista.get(i);
+                lista.set(i, lista.get(j));
+                lista.set(j, temp);
+                i++;
+                j--;
+                mov+=3;
             }
         }
+        
+        if (esq < j)
+            quickSortPartial(lista, esq, j);
+        if (i < dir)
+            quickSortPartial(lista, i, dir);
+    }
     
-        for (int i = 0; i < ordenado.size(); i++) {
-            ordenado.get(i).imprimir();
+    public static int compareJogadores(Jogador jogador1, Jogador jogador2) {
+        int resultado = jogador1.getEstadoNascimento().compareToIgnoreCase(jogador2.getEstadoNascimento());
+        comp++;
+        if (resultado == 0) {
+            resultado = jogador1.getNome().compareToIgnoreCase(jogador2.getNome());
         }
+        
+        return resultado;
     }
 }

@@ -186,7 +186,8 @@ public class TP02Q15 {
         int n = escolhidos.size();
         int comp = 0;
         int mov = 0;
-        for (int i = 0; i < 10; i++) {
+        int k=10;
+        for (int i = 0; i < k; i++) {
            int menor = i;
            for (int j = (i + 1); j < n; j++){
             comp++;

@@ -141,7 +141,7 @@ class Jogador {
 }
 
 public class TP02Q09 {
-
+    public static int comp=0, mov=0;
     public static void main(String[] args) {
         long tempoInicial = System.currentTimeMillis();
         Scanner sc = new Scanner(System.in);
@@ -174,7 +174,7 @@ public class TP02Q09 {
         try {
             FileWriter fileWriter = new FileWriter("matricula_heapsort.txt");
             BufferedWriter arq = new BufferedWriter(fileWriter);
-            arq.write("Matricula: 802742\tTempo: " + (tempoFinal - tempoInicial) / 1000d);
+            arq.write("Matricula: 802742\tTempo: " + (tempoFinal - tempoInicial) / 1000d + "\tComparações: " + comp + "\tMovimentações: " + mov);
             arq.close();
         } catch (Exception e) {
             System.out.println(e.getMessage() + "\n" + e.getLocalizedMessage());
@@ -197,6 +197,7 @@ public class TP02Q09 {
             Jogador temp = array.get(0);
             array.set(0, array.get(i));
             array.set(i, temp);
+            mov+=3;
             // Chame heapify no heap reduzido
             heapify(array, i, 0);
         }
@@ -207,13 +208,13 @@ public class TP02Q09 {
         int esquerda = 2 * i + 1;
         int direita = 2 * i + 2;
     
-        
+        comp++;
         if (esquerda < n && (array.get(esquerda).compareTo(array.get(maior)) > 0
             || (array.get(esquerda).compareTo(array.get(maior)) == 0 
                 && array.get(esquerda).getNome().compareTo(array.get(maior).getNome()) > 0))) {
             maior = esquerda;
         }
-    
+        comp++;
         if (direita < n && (array.get(direita).compareTo(array.get(maior)) > 0
             || (array.get(direita).compareTo(array.get(maior)) == 0 
                 && array.get(direita).getNome().compareTo(array.get(maior).getNome()) > 0))) {
@@ -224,7 +225,7 @@ public class TP02Q09 {
             Jogador swap = array.get(i);
             array.set(i, array.get(maior));
             array.set(maior, swap);
-         
+            mov+=3;
             heapify(array, n, maior);
         }
     }

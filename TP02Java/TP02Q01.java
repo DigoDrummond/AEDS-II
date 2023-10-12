@@ -141,7 +141,7 @@ public class TP02Q01 {
         Scanner sc = new Scanner(System.in);
         ArrayList<Jogador> jogadores = new ArrayList<>();
             try {
-                FileReader fileReader = new FileReader("players.csv");
+                FileReader fileReader = new FileReader("/tmp/players.csv");
                 BufferedReader arq = new BufferedReader(fileReader);
                 arq.readLine();
                 while (arq.ready()) {
