@@ -14,8 +14,10 @@ typedef struct Jogador
     char cidadeNascimento[100];
     char estadoNascimento[100];
 } Jogador;
+
 int comp = 0;
 int mov = 0;
+
 Jogador clone(Jogador *jogador)
 {
     Jogador novo;
@@ -37,7 +39,7 @@ void imprimir(Jogador *jogador)
 
 void ler(Jogador *jogador, char linha[1000])
 {
-    int pos[7];
+    int pos[8];
     int virgulas = 0;
     for (int i = 0; i < strlen(linha); i++)
     {
@@ -186,50 +188,91 @@ void ler(Jogador *jogador, char linha[1000])
     }
     cont = 0;
 }
-
-
-int comparar(const void *a, const void *b)
+void removeIdDuplicado(Jogador *array, int *n)
 {
-    Jogador *jogadorA = (Jogador *)a;
-    Jogador *jogadorB = (Jogador *)b;
-
-    int resultadoPeso = atoi(jogadorA->peso) - atoi(jogadorB->peso);
-
-    if (resultadoPeso == 0)
+    int i, j, k;
+    for (i = 0; i < *n; i++)
     {
-        return strcmp(jogadorA->nome, jogadorB->nome);
-    }
-    else
-    {
-        return resultadoPeso;
+        for (j = i + 1; j < *n; j++)
+        {
+            if (strcmp(array[i].id, array[j].id) == 0)
+            {
+                for (k = j; k < (*n) - 1; k++)
+                {
+                    array[k] = array[k + 1];
+                }
+                (*n)--;
+                j--;
+            }
+        }
     }
 }
 
-void shellsort(Jogador *jogador, int n)
+int getMax(int *array, int n)
 {
-    int h = 1;
-    while (h < n / 3)
+    int maior = array[0];
+
+    for (int i = 1; i < n; i++)
     {
-        h = 3 * h + 1;
+        if (maior < array[i])
+        {
+            maior = array[i];
+        }
+    }
+    return maior;
+}
+void radixSort(Jogador *array, int n)
+{
+    int maxId = 0;
+
+    // Encontra o comprimento máximo do ID para determinar o número de dígitos
+    for (int i = 0; i < n; i++)
+    {
+        int currentId = atoi(array[i].id);
+        if (currentId > maxId)
+        {
+            maxId = currentId;
+        }
     }
 
-    while (h >= 1)
+    // Classifica os jogadores com base no ID
+    for (int exp = 1; maxId / exp > 0; exp *= 10)
     {
-        for (int i = h; i < n; i++)
-        {
-            for (int j = i; j >= h; j -= h)
-            {
-                comp++;
-                if (comparar(&jogador[j], &jogador[j - h]) < 0)
-                {
-                    Jogador temp = jogador[j];
-                    jogador[j] = jogador[j - h];
-                    jogador[j - h] = temp;
-                    mov+=3;
-                }
-            }
-        }
-        h /= 3;
+        radixCountingSort(array, n, exp);
+    }
+}
+
+void radixCountingSort(Jogador *array, int n, int exp)
+{
+    Jogador output[n];
+    int count[10] = {0};
+
+    // Contagem do número de ocorrências para cada dígito
+    for (int i = 0; i < n; i++)
+    {
+        int currentId = atoi(array[i].id);
+        count[(currentId / exp) % 10]++;
+    }
+
+    // Atualiza o array de contagem para indicar as posições finais dos elementos
+    for (int i = 1; i < 10; i++)
+    {
+        count[i] += count[i - 1];
+    }
+
+    // Constroi o array de saída com base nas posições finais do elemento no array de contagem
+    for (int i = n - 1; i >= 0; i--)
+    {
+        int currentId = atoi(array[i].id);
+        int position = (currentId / exp) % 10;
+        output[count[position] - 1] = array[i];
+        count[position]--;
+    }
+
+    // Copia o array de saída de volta para o array original
+    for (int i = 0; i < n-1; i++)
+    {
+        array[i] = output[i];
     }
 }
 
@@ -241,13 +284,12 @@ int main()
     FILE *arq = fopen("/tmp/players.csv", "r");
     Jogador jogador[3922];
     char id[100];
-    char nome[100];
-    Jogador busca[1000];
+    Jogador busca[3923];
     int cont = 0;
 
     fgets(entrada, sizeof(entrada), arq);
     int i = 0;
-    while (fgets(entrada, 1000, arq))
+    while (fgets(entrada, 1000, arq) && i < 3922)
     {
         ler(&jogador[i], entrada);
         i++;
@@ -256,21 +298,27 @@ int main()
     scanf("%s", id);
     while (strcmp(id, "FIM") != 0)
     {
-        busca[cont++] = clone(&jogador[atoi(id)]);
+        for (int j = 0; j < 3923; j++)
+        {
+            if (strcmp(jogador[j].id, id) == 0)
+            {
+                busca[cont++] = clone(&jogador[j]);
+            }
+        }
         scanf("%s", id);
     }
 
-    shellsort(busca, cont);
+    radixSort(busca, cont - 1);
 
     for (int i = 0; i < cont; i++)
     {
         imprimir(&busca[i]);
     }
-
+    t = clock() - t;
 
     FILE *log;
-    log = fopen("matrícula_shellsort.txt", "w");
-    fprintf(log, "Matricula: 802742\t Comparações: %d\t Movimentações: %d\t Execucao: %lfms", comp, mov, ((double)t)/((CLOCKS_PER_SEC/1000)));
+    log = fopen("matrícula_radixSort.txt", "w");
+    fprintf(log, "Matricula: 802472\t Comparações: %d\t Movimentações: %d\t Execucao: %lfms", comp, mov, ((double)t) / ((CLOCKS_PER_SEC / 1000)));
     fclose(log);
     fclose(arq);
     return 0;

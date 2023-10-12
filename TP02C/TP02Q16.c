@@ -14,8 +14,10 @@ typedef struct Jogador
     char cidadeNascimento[100];
     char estadoNascimento[100];
 } Jogador;
-int comp = 0;
+
+int comp=0;
 int mov = 0;
+
 Jogador clone(Jogador *jogador)
 {
     Jogador novo;
@@ -37,7 +39,7 @@ void imprimir(Jogador *jogador)
 
 void ler(Jogador *jogador, char linha[1000])
 {
-    int pos[7];
+    int pos[8];
     int virgulas = 0;
     for (int i = 0; i < strlen(linha); i++)
     {
@@ -186,50 +188,22 @@ void ler(Jogador *jogador, char linha[1000])
     }
     cont = 0;
 }
-
-
-int comparar(const void *a, const void *b)
+void insercaoParcial(Jogador *jogador, int n, int k)
 {
-    Jogador *jogadorA = (Jogador *)a;
-    Jogador *jogadorB = (Jogador *)b;
-
-    int resultadoPeso = atoi(jogadorA->peso) - atoi(jogadorB->peso);
-
-    if (resultadoPeso == 0)
+    for (int i = 1; i < n; i++)
     {
-        return strcmp(jogadorA->nome, jogadorB->nome);
-    }
-    else
-    {
-        return resultadoPeso;
-    }
-}
-
-void shellsort(Jogador *jogador, int n)
-{
-    int h = 1;
-    while (h < n / 3)
-    {
-        h = 3 * h + 1;
-    }
-
-    while (h >= 1)
-    {
-        for (int i = h; i < n; i++)
+        Jogador tmp = jogador[i];
+        comp++;
+        int j = (i < k) ? i - 1 : k - 1;
+        while ((j >= 0) && ((atoi(jogador[j].anoNascimento) > atoi(tmp.anoNascimento)) ||
+                            ((atoi(jogador[j].anoNascimento) == atoi(tmp.anoNascimento)) && (strcmp(jogador[j].nome, tmp.nome) > 0))))
         {
-            for (int j = i; j >= h; j -= h)
-            {
-                comp++;
-                if (comparar(&jogador[j], &jogador[j - h]) < 0)
-                {
-                    Jogador temp = jogador[j];
-                    jogador[j] = jogador[j - h];
-                    jogador[j - h] = temp;
-                    mov+=3;
-                }
-            }
+            jogador[j + 1] = jogador[j];
+            j--;
+            mov++;
         }
-        h /= 3;
+        jogador[j + 1] = tmp;
+        mov++;
     }
 }
 
@@ -239,15 +213,14 @@ int main()
     t = clock();
     char entrada[1000];
     FILE *arq = fopen("/tmp/players.csv", "r");
-    Jogador jogador[3922];
+    Jogador jogador[3923];
     char id[100];
-    char nome[100];
-    Jogador busca[1000];
+    Jogador busca[3923];
     int cont = 0;
 
     fgets(entrada, sizeof(entrada), arq);
     int i = 0;
-    while (fgets(entrada, 1000, arq))
+    while (fgets(entrada, 1000, arq) && i < 3922)
     {
         ler(&jogador[i], entrada);
         i++;
@@ -256,22 +229,26 @@ int main()
     scanf("%s", id);
     while (strcmp(id, "FIM") != 0)
     {
-        busca[cont++] = clone(&jogador[atoi(id)]);
+        for (int j = 0; j < 3923; j++)
+        {
+            if (strcmp(jogador[j].id, id) == 0)
+            {
+                busca[cont++] = clone(&jogador[j]);
+            }
+        }
         scanf("%s", id);
     }
 
-    shellsort(busca, cont);
+int k = 10;
+    insercaoParcial(busca, cont - 1,k);
 
-    for (int i = 0; i < cont; i++)
+    for (int i = 0; i < 10; i++)
     {
         imprimir(&busca[i]);
     }
-
-
     FILE *log;
-    log = fopen("matrícula_shellsort.txt", "w");
-    fprintf(log, "Matricula: 802742\t Comparações: %d\t Movimentações: %d\t Execucao: %lfms", comp, mov, ((double)t)/((CLOCKS_PER_SEC/1000)));
-    fclose(log);
+    log = fopen("matrícula_bolha.txt", "w");
+    fprintf(log, "Matricula: 803716\t Comparações: %d\t Movimentações: %d\t Execucao: %lfms", comp, mov, ((double)t)/((CLOCKS_PER_SEC/1000)));
     fclose(arq);
     return 0;
 }

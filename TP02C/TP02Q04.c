@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <stdbool.h>
+#include <time.h>
 typedef struct Jogador{
     char id[100];
     char nome[100];
@@ -217,6 +218,8 @@ void ler (Jogador *jogador, char linha[1000])
 
 int main () 
 {
+    clock_t t;
+    t = clock();
     char entrada[1000];
     FILE* arq = fopen("/tmp/players.csv","r");
     Jogador jogador[3922];

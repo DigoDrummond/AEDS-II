@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <stdbool.h>
+#include <time.h>
 typedef struct Jogador{
     char id[100];
     char nome[100];
@@ -12,6 +13,8 @@ typedef struct Jogador{
     char cidadeNascimento[100];
     char estadoNascimento[100];
 } Jogador;
+int comp = 0; 
+int mov = 0;
 
 Jogador clone (Jogador *jogador)
 { 
@@ -198,26 +201,38 @@ void ler (Jogador *jogador, char linha[1000])
         return num;
     }
 
-    void shellsort(Jogador* jogador, int n) {
-    int h = 1;
-    while (h < n / 3) {
-        h = 3 * h + 1;
+    void selectionSortRecursivo(Jogador* jogador, int start, int end)
+{
+    if(start >= end) 
+    {
+        return;
+    }
+    int menor = start;
+    
+    for (int i = start + 1; i <= end; i++) 
+    {
+        comp++;
+        if (strcmp(jogador[i].nome, jogador[menor].nome) < 0) 
+    {
+            menor = i; 
+        }
     }
     
-    while (h >= 1) {
-        for (int i = h; i < n; i++) {
-            for (int j = i; j >= h && atoi(jogador[j].peso) < atoi(jogador[j - h].peso); j -= h) {
-                Jogador temp = jogador[j];
-                jogador[j] = jogador[j - h];
-                jogador[j - h] = temp;
-            }
-        }
-        h /= 3;
-    }
+    Jogador temp = jogador[start];
+    jogador[start] = jogador[menor];
+    jogador[menor] = temp;
+    mov+=3;
+    
+    selectionSortRecursivo(jogador,start + 1,end); 
 }
+
+
+
 
 int main () 
 {
+     clock_t t;
+    t = clock();
     char entrada[1000];
     FILE* arq = fopen("/tmp/players.csv","r");
     Jogador jogador[3922];
@@ -247,14 +262,19 @@ int main ()
         scanf("%s", id);
     }
 
-    shellsort(busca,cont); 
+    selectionSortRecursivo(busca,0,cont - 1); 
     
     for (int i = 0; i < cont; i++) 
     {
         imprimir(&busca[i]);
     }
     
+    t = clock() - t;
 
+    FILE *log;
+    log = fopen("matrícula_selecaoRecursiva.txt", "w");
+    fprintf(log, "Matricula: 803716\t Comparações: %d\t Movimentações: %d\t Execucao: %lfms", comp, mov, ((double)t)/((CLOCKS_PER_SEC/1000)));
+    fclose(log);
 
         
     fclose(arq);

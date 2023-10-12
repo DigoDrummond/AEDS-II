@@ -14,8 +14,10 @@ typedef struct Jogador
     char cidadeNascimento[100];
     char estadoNascimento[100];
 } Jogador;
+
 int comp = 0;
 int mov = 0;
+
 Jogador clone(Jogador *jogador)
 {
     Jogador novo;
@@ -37,7 +39,7 @@ void imprimir(Jogador *jogador)
 
 void ler(Jogador *jogador, char linha[1000])
 {
-    int pos[7];
+    int pos[8];
     int virgulas = 0;
     for (int i = 0; i < strlen(linha); i++)
     {
@@ -187,91 +189,95 @@ void ler(Jogador *jogador, char linha[1000])
     cont = 0;
 }
 
-
-int comparar(const void *a, const void *b)
+int compareJogadores(const void *a, const void *b)
 {
-    Jogador *jogadorA = (Jogador *)a;
-    Jogador *jogadorB = (Jogador *)b;
+    Jogador *jogador1 = (Jogador *)a;
+    Jogador *jogador2 = (Jogador *)b;
 
-    int resultadoPeso = atoi(jogadorA->peso) - atoi(jogadorB->peso);
+    int resultado = strcmp(jogador1->estadoNascimento, jogador2->estadoNascimento);
 
-    if (resultadoPeso == 0)
+    if (resultado == 0)
     {
-        return strcmp(jogadorA->nome, jogadorB->nome);
+        resultado = strcmp(jogador1->nome, jogador2->nome);
     }
-    else
-    {
-        return resultadoPeso;
-    }
+
+    return resultado;
 }
 
-void shellsort(Jogador *jogador, int n)
+void quickSort(Jogador *jogadores, int esq, int dir)
 {
-    int h = 1;
-    while (h < n / 3)
+    int i = esq, j = dir;
+
+    Jogador pivo = jogadores[(esq + dir) / 2];
+
+    while (i <= j)
     {
-        h = 3 * h + 1;
+        while (compareJogadores(&jogadores[i], &pivo) < 0)
+            i++;
+        while (compareJogadores(&jogadores[j], &pivo) > 0)
+            j--;
+
+        if (i <= j)
+        {
+            Jogador temp = jogadores[i];
+            jogadores[i] = jogadores[j];
+            jogadores[j] = temp;
+            i++;
+            j--;
+        }
     }
 
-    while (h >= 1)
-    {
-        for (int i = h; i < n; i++)
-        {
-            for (int j = i; j >= h; j -= h)
-            {
-                comp++;
-                if (comparar(&jogador[j], &jogador[j - h]) < 0)
-                {
-                    Jogador temp = jogador[j];
-                    jogador[j] = jogador[j - h];
-                    jogador[j - h] = temp;
-                    mov+=3;
-                }
-            }
-        }
-        h /= 3;
-    }
+    if (esq < j)
+        quickSort(jogadores, esq, j);
+    if (i < dir)
+        quickSort(jogadores, i, dir);
 }
 
 int main()
 {
-    clock_t t;
+     clock_t t;
     t = clock();
-    char entrada[1000];
-    FILE *arq = fopen("/tmp/players.csv", "r");
-    Jogador jogador[3922];
-    char id[100];
-    char nome[100];
-    Jogador busca[1000];
-    int cont = 0;
+    FILE *arq;
+    arq = fopen("/tmp/players.csv", "r");
+    char linha[1000];
+    fgets(linha, 1000, arq);
 
-    fgets(entrada, sizeof(entrada), arq);
+    Jogador jogadores[3923];
     int i = 0;
-    while (fgets(entrada, 1000, arq))
+    while (fgets(linha, 1000, arq))
     {
-        ler(&jogador[i], entrada);
+        ler(&jogadores[i], linha);
         i++;
     }
 
+    Jogador escolhidos[3923];
+    int k = 0;
+    char id[100];
     scanf("%s", id);
     while (strcmp(id, "FIM") != 0)
     {
-        busca[cont++] = clone(&jogador[atoi(id)]);
+        for (int j = 0; j < 3923; j++)
+        {
+            if (atoi(id) == atoi(jogadores[j].id))
+            {
+                escolhidos[k++] = clone(&jogadores[j]);
+            }
+        }
         scanf("%s", id);
     }
 
-    shellsort(busca, cont);
-
-    for (int i = 0; i < cont; i++)
+    quickSort(escolhidos, 0, k - 1);
+    for (int i = 0; i < k; i++)
     {
-        imprimir(&busca[i]);
+        imprimir(&escolhidos[i]);
     }
 
 
     FILE *log;
-    log = fopen("matrícula_shellsort.txt", "w");
+    log = fopen("matrícula_quicksort.txt", "w");
     fprintf(log, "Matricula: 802742\t Comparações: %d\t Movimentações: %d\t Execucao: %lfms", comp, mov, ((double)t)/((CLOCKS_PER_SEC/1000)));
     fclose(log);
     fclose(arq);
+
     return 0;
 }
